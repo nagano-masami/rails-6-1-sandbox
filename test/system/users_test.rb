@@ -2,46 +2,34 @@ require "application_system_test_case"
 
 class UsersTest < ApplicationSystemTestCase
   setup do
-    @user = users(:one)
+    # テストデータの作成
+    @user = User.create!(name: 'いとう')
   end
 
-  test "visiting the index" do
-    visit users_url
-    assert_selector "h1", text: "Users"
-  end
+  test "yubinbango.js" do
+    # User編集画面を開く
+    visit edit_user_path(@user)
 
-  test "creating a User" do
-    visit users_url
-    click_on "New User"
+    # Nameに"いとう"が入力されていることを検証する
+    assert has_field?('Name', with: 'いとう')
 
-    fill_in "Address", with: @user.address
-    fill_in "Name", with: @user.name
-    fill_in "Postal code", with: @user.postal_code
-    click_on "Create User"
+    # 郵便番号を入力
+    #fill_in 'Postal code', with: '158-0083'
+    # 住所が自動入力されたことを検証する
+    #assert has_field?('Address', with: '東京都世田谷区奥沢')
 
-    assert_text "User was successfully created"
-    click_on "Back"
-  end
+    # 郵便番号を入力
+    fill_in 'Postal code', with: '158-0083'
+    # 住所が自動入力されたことを検証する
+    assert has_field?('Address', with: 'ニューヨーク')
 
-  test "updating a User" do
-    visit users_url
-    click_on "Edit", match: :first
+    # 更新実行
+    click_button 'Update User'
 
-    fill_in "Address", with: @user.address
-    fill_in "Name", with: @user.name
-    fill_in "Postal code", with: @user.postal_code
-    click_on "Update User"
-
-    assert_text "User was successfully updated"
-    click_on "Back"
-  end
-
-  test "destroying a User" do
-    visit users_url
-    page.accept_confirm do
-      click_on "Destroy", match: :first
-    end
-
-    assert_text "User was successfully destroyed"
+    # 正しく更新されていること（＝画面の表示が正しいこと）を検証する
+    assert_text 'User was successfully updated.'
+    assert_text 'いとう'
+    assert_text '158-0083'
+    assert_text '東京都世田谷区奥沢'
   end
 end
